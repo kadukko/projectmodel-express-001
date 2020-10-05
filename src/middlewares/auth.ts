@@ -2,8 +2,11 @@
 import { Response, NextFunction } from 'express'
 import { Request } from '../types/Request'
 import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
 
-import config from '../config'
+dotenv.config()
+
+const secret = process.env.APP_SECRET || 'no_secret'
 
 export default (req: Request, res: Response, next: NextFunction): any => {
   const authHeader = req.header('authorization')
@@ -20,7 +23,7 @@ export default (req: Request, res: Response, next: NextFunction): any => {
     return res.status(401).send({ error: 'Token malformatted' })
   }
 
-  jwt.verify(token, config.appSecret, (err, decoded: any) => {
+  jwt.verify(token, secret, (err, decoded: any) => {
     if (err) { return res.status(401).send({ error: 'Invalid token' }) }
 
     req.userId = decoded.id
